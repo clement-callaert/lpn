@@ -1,0 +1,48 @@
+{
+  "experiment_id": "baseline_pattern_2d_gpu_compat_seed_1",
+  "git_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "git_branch": "research/stochastic-latent-search",
+  "timestamp": "2026-07-22T23:24:53+02:00",
+  "hostname": "work-station",
+  "accelerator": "NVIDIA GeForce RTX 5090, JAX CudaDevice(id=0)",
+  "dataset": "procedural PATTERN, pattern_size=2, grid=4x4, 4 pairs",
+  "split": "procedural training and fixed generated evaluation tasks",
+  "checkpoint": {
+    "path": "artifacts/checkpoints/pattern_2d_seed_1.msgpack",
+    "sha256": "bc292f2cd95365f597dec2a3f61c099a7d5a08177dc56050e8823c3a616f72be",
+    "size_bytes": 4082621,
+    "tracked": false
+  },
+  "method": "official pattern_2d configuration in the GPU compatibility environment",
+  "method_hyperparameters": {
+    "training_inference_mode": "mean",
+    "evaluation_gradient_ascent": {"num_steps": 10, "lr": 0.1, "optimizer": "sgd (repository default)"},
+    "environment_deviations": {"jax": "0.4.26 -> 0.6.0", "jaxlib": "0.4.26 -> 0.6.0", "flax": "0.8.4 -> 0.10.2", "torch": "2.4.1 CUDA wheel -> 2.4.1+cpu"}
+  },
+  "seed": 1,
+  "number_of_candidates": 1,
+  "number_of_steps": 200000,
+  "decoder_calls": null,
+  "wall_clock_seconds": 942.62,
+  "primary_metrics": {
+    "final_mean_exact_match_accuracy": 0.9817708730697632,
+    "final_mean_shape_accuracy": 1.0,
+    "final_mean_pixel_correctness": 0.9977213740348816,
+    "final_gradient_ascent_10_exact_match_accuracy": 0.9973958730697632,
+    "final_gradient_ascent_10_shape_accuracy": 1.0,
+    "final_gradient_ascent_10_pixel_correctness": 0.9998372793197632
+  },
+  "diagnostics": {
+    "training_total_loss": 0.01531,
+    "training_grid_loss": 0.01531,
+    "training_gradient_norm": 13.53129,
+    "training_latent_norm": 2.316,
+    "wandb_run_id": "uvzpoiyg",
+    "tracking_mode": "offline",
+    "resolved_config": "outputs/2026-07-22/23-24-52/.hydra/config.yaml",
+    "log": "artifacts/logs/baseline_pattern_2d_gpu_compat_seed_1.log"
+  },
+  "status": "success",
+  "error_message": null,
+  "scientific_use": "Second independent baseline training seed; matched search-step ablation still pending."
+}

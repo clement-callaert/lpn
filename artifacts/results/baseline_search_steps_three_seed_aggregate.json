@@ -1,0 +1,107 @@
+{
+  "experiment_id": "baseline_search_steps_three_seed_aggregate",
+  "git_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "git_branch": "research/stochastic-latent-search",
+  "dataset_seed": 0,
+  "evaluation_seed": 0,
+  "learning_rate": 0.1,
+  "optimizer": "sgd (repository default)",
+  "training_seeds": [
+    0,
+    1,
+    2
+  ],
+  "per_seed": {
+    "0": {
+      "checkpoint_sha256": "3cb6d3e41e698e1e0e62c785ecdf90d1fb4a600384fd6cf21f3460a110d7de13",
+      "exact_match_by_steps": {
+        "0": 0.7239583730697632,
+        "1": 0.8854166865348816,
+        "5": 1.0,
+        "10": 1.0,
+        "20": 1.0
+      }
+    },
+    "1": {
+      "checkpoint_sha256": "bc292f2cd95365f597dec2a3f61c099a7d5a08177dc56050e8823c3a616f72be",
+      "exact_match_by_steps": {
+        "0": 0.9869791865348816,
+        "1": 1.0,
+        "5": 1.0,
+        "10": 1.0,
+        "20": 1.0
+      }
+    },
+    "2": {
+      "checkpoint_sha256": "92ecdd494f036d4ac0a865903316575b207444493ee76d6b7c0b0b601e2ee8fc",
+      "exact_match_by_steps": {
+        "0": 0.9348958730697632,
+        "1": 0.9947916865348816,
+        "5": 1.0,
+        "10": 1.0,
+        "20": 1.0
+      }
+    }
+  },
+  "by_search_steps": {
+    "0": {
+      "mean": 0.881944477558136,
+      "std": 0.13927625351772904,
+      "min": 0.7239583730697632,
+      "max": 0.9869791865348816,
+      "seed_0": 0.7239583730697632,
+      "seed_1": 0.9869791865348816,
+      "seed_2": 0.9348958730697632,
+      "improvement_over_zero_step_mean": 0.0,
+      "n_seeds_perfect": 0
+    },
+    "1": {
+      "mean": 0.960069457689921,
+      "std": 0.064703622874865,
+      "min": 0.8854166865348816,
+      "max": 1.0,
+      "seed_0": 0.8854166865348816,
+      "seed_1": 1.0,
+      "seed_2": 0.9947916865348816,
+      "improvement_over_zero_step_mean": 0.07812498013178504,
+      "n_seeds_perfect": 1
+    },
+    "5": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "seed_0": 1.0,
+      "seed_1": 1.0,
+      "seed_2": 1.0,
+      "improvement_over_zero_step_mean": 0.11805552244186401,
+      "n_seeds_perfect": 3
+    },
+    "10": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "seed_0": 1.0,
+      "seed_1": 1.0,
+      "seed_2": 1.0,
+      "improvement_over_zero_step_mean": 0.11805552244186401,
+      "n_seeds_perfect": 3
+    },
+    "20": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "seed_0": 1.0,
+      "seed_1": 1.0,
+      "seed_2": 1.0,
+      "improvement_over_zero_step_mean": 0.11805552244186401,
+      "n_seeds_perfect": 3
+    }
+  },
+  "saturation_point_steps": 5,
+  "saturation_definition": "smallest evaluated step count at which mean exact-match across the three training seeds reaches the observed plateau of 1.0",
+  "scientific_use": "Controlled three-seed original deterministic latent-search step ablation on in-family pattern_2d. Not an OOD result and not a method comparison against stochastic/proximal search.",
+  "status": "success"
+}

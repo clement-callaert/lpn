@@ -1,0 +1,102 @@
+{
+  "accelerator": "[CudaDevice(id=0)]",
+  "checkpoint": {
+    "path": "artifacts/checkpoints/pattern_2d_seed_2.msgpack",
+    "sha256": "92ecdd494f036d4ac0a865903316575b207444493ee76d6b7c0b0b601e2ee8fc",
+    "size_bytes": 4082621
+  },
+  "configuration": "outputs/2026-07-23/11-35-41/.hydra/config.yaml",
+  "dataset": "procedural PATTERN, length=96, seed=0",
+  "decoder_calls": null,
+  "error_message": null,
+  "evaluations": [
+    {
+      "inference_mode": "mean",
+      "metrics": {
+        "test/generator_mean/accuracy": 0.9348958730697632,
+        "test/generator_mean/correct_shapes": 1.0,
+        "test/generator_mean/pixel_correctness": 0.9930013418197632
+      },
+      "name": "generator_mean",
+      "number_of_steps": 0,
+      "wall_clock_seconds": 12.126349000999653
+    },
+    {
+      "inference_mode": "gradient_ascent",
+      "metrics": {
+        "test/generator_gradient_ascent_0/accuracy": 0.9348958730697632,
+        "test/generator_gradient_ascent_0/correct_shapes": 1.0,
+        "test/generator_gradient_ascent_0/pixel_correctness": 0.9930013418197632
+      },
+      "name": "generator_gradient_ascent_0",
+      "number_of_steps": 0,
+      "wall_clock_seconds": 8.27228417499964
+    },
+    {
+      "inference_mode": "gradient_ascent",
+      "metrics": {
+        "test/generator_gradient_ascent_1/accuracy": 0.9947916865348816,
+        "test/generator_gradient_ascent_1/correct_shapes": 1.0,
+        "test/generator_gradient_ascent_1/pixel_correctness": 0.9996744990348816
+      },
+      "name": "generator_gradient_ascent_1",
+      "number_of_steps": 1,
+      "wall_clock_seconds": 17.539171730999897
+    },
+    {
+      "inference_mode": "gradient_ascent",
+      "metrics": {
+        "test/generator_gradient_ascent_5/accuracy": 1.0,
+        "test/generator_gradient_ascent_5/correct_shapes": 1.0,
+        "test/generator_gradient_ascent_5/pixel_correctness": 1.0
+      },
+      "name": "generator_gradient_ascent_5",
+      "number_of_steps": 5,
+      "wall_clock_seconds": 18.575139289999697
+    },
+    {
+      "inference_mode": "gradient_ascent",
+      "metrics": {
+        "test/generator_gradient_ascent_10/accuracy": 1.0,
+        "test/generator_gradient_ascent_10/correct_shapes": 1.0,
+        "test/generator_gradient_ascent_10/pixel_correctness": 1.0
+      },
+      "name": "generator_gradient_ascent_10",
+      "number_of_steps": 10,
+      "wall_clock_seconds": 15.887580126000103
+    },
+    {
+      "inference_mode": "gradient_ascent",
+      "metrics": {
+        "test/generator_gradient_ascent_20/accuracy": 1.0,
+        "test/generator_gradient_ascent_20/correct_shapes": 1.0,
+        "test/generator_gradient_ascent_20/pixel_correctness": 1.0
+      },
+      "name": "generator_gradient_ascent_20",
+      "number_of_steps": 20,
+      "wall_clock_seconds": 16.45755119000023
+    }
+  ],
+  "experiment_id": "baseline_search_steps_seed_2",
+  "git_branch": "research/stochastic-latent-search",
+  "git_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "hostname": "work-station",
+  "method": "controlled mean versus original latent-search step ablation",
+  "method_hyperparameters": {
+    "learning_rate": 0.1,
+    "optimizer": "sgd (repository default)",
+    "search_steps": [
+      0,
+      1,
+      5,
+      10,
+      20
+    ]
+  },
+  "number_of_candidates": 1,
+  "scientific_use": "Single-checkpoint debugging ablation; not a multi-training-seed comparison.",
+  "seed": 0,
+  "split": "fixed generated evaluation tasks from the training family",
+  "status": "success",
+  "timestamp": "2026-07-23T11:54:42.000852+02:00"
+}

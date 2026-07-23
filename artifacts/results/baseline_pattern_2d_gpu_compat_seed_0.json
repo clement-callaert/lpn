@@ -1,0 +1,63 @@
+{
+  "experiment_id": "baseline_pattern_2d_gpu_compat_seed_0",
+  "git_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "git_branch": "research/stochastic-latent-search",
+  "timestamp": "2026-07-22T22:55:12+02:00",
+  "hostname": "work-station",
+  "accelerator": "NVIDIA GeForce RTX 5090, 32607 MiB, driver 591.86, CUDA 13.1, JAX CudaDevice(id=0)",
+  "dataset": "procedural PATTERN, pattern_size=2, grid=4x4, 4 pairs",
+  "split": "procedural training and fixed generated evaluation tasks",
+  "checkpoint": {
+    "path": "state.msgpack",
+    "sha256": "3cb6d3e41e698e1e0e62c785ecdf90d1fb4a600384fd6cf21f3460a110d7de13",
+    "size_bytes": 4082621,
+    "tracked": false
+  },
+  "method": "official pattern_2d configuration in the GPU compatibility environment",
+  "method_hyperparameters": {
+    "training_inference_mode": "mean",
+    "evaluation_mean": {},
+    "evaluation_gradient_ascent": {"num_steps": 10, "lr": 0.1, "optimizer": "sgd (repository default)"},
+    "environment_deviations": {"jax": "0.4.26 -> 0.6.0", "jaxlib": "0.4.26 -> 0.6.0", "flax": "0.8.4 -> 0.10.2", "torch": "2.4.1 CUDA wheel -> 2.4.1+cpu"}
+  },
+  "seed": 0,
+  "number_of_candidates": 1,
+  "number_of_steps": 200000,
+  "decoder_calls": null,
+  "wall_clock_seconds": 948.08,
+  "primary_metrics": {
+    "final_mean_exact_match_accuracy": 0.7317708730697632,
+    "final_mean_shape_accuracy": 1.0,
+    "final_mean_pixel_correctness": 0.9796549677848816,
+    "final_gradient_ascent_10_exact_match_accuracy": 1.0,
+    "final_gradient_ascent_10_shape_accuracy": 1.0,
+    "final_gradient_ascent_10_pixel_correctness": 1.0
+  },
+  "diagnostics": {
+    "training_total_loss": 0.023049702867865562,
+    "training_grid_loss": 0.023049695417284966,
+    "training_gradient_norm": 19.314104080200195,
+    "training_latent_norm": 2.178706169128418,
+    "final_mean_evaluation_seconds": 4.682397842407227,
+    "final_gradient_ascent_10_evaluation_seconds": 4.739808082580566,
+    "wandb_run_id": "r14djf3u",
+    "tracking_mode": "offline",
+    "resolved_config": "outputs/2026-07-22/22-55-12/.hydra/config.yaml",
+    "log": "artifacts/logs/baseline_pattern_2d_gpu_compat.log",
+    "status_by_step": [
+      {"training_step": 20000, "mean_accuracy": 0.5234375, "gradient_ascent_10_accuracy": 0.8151041865348816},
+      {"training_step": 40000, "mean_accuracy": 0.7630208730697632, "gradient_ascent_10_accuracy": 0.8723958730697632},
+      {"training_step": 60000, "mean_accuracy": 0.6614583730697632, "gradient_ascent_10_accuracy": 0.9296875},
+      {"training_step": 80000, "mean_accuracy": 0.671875, "gradient_ascent_10_accuracy": 0.9765625},
+      {"training_step": 100000, "mean_accuracy": 0.8567708730697632, "gradient_ascent_10_accuracy": 0.9921875},
+      {"training_step": 120000, "mean_accuracy": 0.8828125, "gradient_ascent_10_accuracy": 0.9895833730697632},
+      {"training_step": 140000, "mean_accuracy": 0.96875, "gradient_ascent_10_accuracy": 1.0},
+      {"training_step": 160000, "mean_accuracy": 0.9453125, "gradient_ascent_10_accuracy": 1.0},
+      {"training_step": 180000, "mean_accuracy": 0.9401041865348816, "gradient_ascent_10_accuracy": 1.0},
+      {"training_step": 200000, "mean_accuracy": 0.7317708730697632, "gradient_ascent_10_accuracy": 1.0}
+    ]
+  },
+  "status": "success",
+  "error_message": null,
+  "scientific_use": "Baseline for comparisons performed entirely within this explicit GPU compatibility environment. It is not an exact repository-dependency reproduction."
+}

@@ -1,0 +1,31 @@
+{
+  "experiment_id": "baseline_pattern_2d_official_attempt_seed_0",
+  "git_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "git_branch": "research/stochastic-latent-search",
+  "timestamp": "2026-07-22T19:45:24+02:00",
+  "hostname": "work-station",
+  "accelerator": "JAX CPUDevice(id=0); NVIDIA GPU inaccessible to NVML",
+  "dataset": "procedural PATTERN, pattern_size=2, grid=4x4, 4 pairs",
+  "split": "procedural training and fixed generated evaluation tasks",
+  "checkpoint": null,
+  "method": "official pattern_2d configuration",
+  "method_hyperparameters": {
+    "training_inference_mode": "mean",
+    "evaluation_modes": ["mean", "gradient_ascent"],
+    "gradient_ascent": {"num_steps": 10, "lr": 0.1, "optimizer": "sgd (repository default)"}
+  },
+  "seed": 0,
+  "number_of_candidates": 1,
+  "number_of_steps": 0,
+  "decoder_calls": null,
+  "wall_clock_seconds": 1080,
+  "primary_metrics": {},
+  "diagnostics": {
+    "configured_training_steps": 200000,
+    "configured_log_interval": 1000,
+    "configured_evaluation_interval": 20000,
+    "observed": "Model initialization and both evaluation datasets completed; the first 1000-step CPU block did not complete in approximately 18 minutes."
+  },
+  "status": "interrupted",
+  "error_message": "Stopped after approximately 18 minutes because the first compiled 1000-step CPU block had not completed; full official reproduction is not practical on the currently exposed CPU backend."
+}

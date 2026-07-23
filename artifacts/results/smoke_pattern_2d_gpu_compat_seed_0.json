@@ -1,0 +1,58 @@
+{
+  "experiment_id": "smoke_pattern_2d_gpu_compat_seed_0",
+  "git_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "git_branch": "research/stochastic-latent-search",
+  "timestamp": "2026-07-22T22:51:40+02:00",
+  "hostname": "work-station",
+  "accelerator": "NVIDIA GeForce RTX 5090, 32607 MiB, driver 591.86, CUDA 13.1, JAX CudaDevice(id=0)",
+  "dataset": "procedural PATTERN, pattern_size=2, grid=4x4, 4 pairs",
+  "split": "procedural training and fixed generated evaluation tasks",
+  "checkpoint": null,
+  "method": "one-step GPU compatibility execution smoke test",
+  "method_hyperparameters": {
+    "training_inference_mode": "mean",
+    "evaluation_mean": {},
+    "evaluation_gradient_ascent": {"num_steps": 10, "lr": 0.1, "optimizer": "sgd (repository default)"},
+    "environment_deviations": {"jax": "0.4.26 -> 0.6.0", "jaxlib": "0.4.26 -> 0.6.0", "flax": "0.8.4 -> 0.10.2", "torch": "2.4.1 CUDA wheel -> 2.4.1+cpu"},
+    "hydra_overrides": {
+      "training.total_num_steps": 1,
+      "training.log_every_n_steps": 1,
+      "training.eval_every_n_logs": 1,
+      "training.save_checkpoint_every_n_logs": null,
+      "eval.test_datasets.0.num_tasks_to_show": 0,
+      "eval.test_datasets.1.num_tasks_to_show": 0
+    }
+  },
+  "seed": 0,
+  "number_of_candidates": 1,
+  "number_of_steps": 1,
+  "decoder_calls": null,
+  "wall_clock_seconds": 81.87,
+  "primary_metrics": {
+    "mean_exact_match_accuracy": 0.0,
+    "mean_shape_accuracy": 0.0,
+    "mean_pixel_correctness": 0.0,
+    "gradient_ascent_10_exact_match_accuracy": 0.0,
+    "gradient_ascent_10_shape_accuracy": 0.0,
+    "gradient_ascent_10_pixel_correctness": 0.0
+  },
+  "diagnostics": {
+    "training_total_loss": 9.486512184143066,
+    "training_grid_loss": 4.913753509521484,
+    "training_shape_row_loss": 0.6394414305686951,
+    "training_shape_col_loss": 3.9333174228668213,
+    "training_gradient_norm": 44.86946105957031,
+    "training_latent_norm": 1.9523601531982422,
+    "training_context_norm": 1.6312150955200195,
+    "training_latent_context_distance": 1.6091704368591309,
+    "training_seconds": 18.81027626991272,
+    "mean_evaluation_seconds": 11.087276220321655,
+    "gradient_ascent_10_evaluation_seconds": 19.21389651298523,
+    "wandb_run_id": "8ds9a8c0",
+    "tracking_mode": "offline",
+    "pip_check": "No broken requirements found"
+  },
+  "status": "success",
+  "error_message": null,
+  "scientific_use": "Compatibility execution smoke test only. Dependency versions differ from the repository pins and the checkpoint has one training step; metrics are not baseline reproduction evidence."
+}
