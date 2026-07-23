@@ -386,3 +386,47 @@ Use frozen pattern_2d / HF `lpn-2d` as the method-implementation sandbox. Treat 
 ### Next safe action
 
 Implement compute counters, then non-RL baselines, then a minimal RL stop/continue policy on frozen pattern / `lpn-2d` checkpoints.
+
+## Session — 2026-07-23 — RL stop/continue prototype
+
+### Objective
+
+Implement and evaluate the first reinforcement-learning stop/continue controller for test-time compute on frozen pattern_2d.
+
+### Repository state
+
+- Branch: `research/stochastic-latent-search`
+- Tip before session: `f2761aedb89f069c6e7a0d425f50f6a835bc8572`
+- Env: `.venv-gpu`, JAX 0.6.0, Flax 0.10.2, Optax 0.2.2, RTX 5090
+
+### Actions
+
+1. Factored `one_sgd_step` and closed-loop fixed-K trajectories; parity vs upstream for K=0,1,5 (grids/shapes bit-identical; context within about 1e-3).
+2. Built `src/rl/` environment, observations, linear Bernoulli policy, REINFORCE.
+3. Generated offline trajectories (length 8) for setting B (ckpt 0+1 train/val).
+4. Penalty sweep on validation; selected lambda=0.00 by max validation return.
+5. Matched eval on checkpoint 2, dataset seed 0, length 24 (~90 min).
+
+### Main result
+
+On checkpoint 2 / length 24:
+
+| Controller | EM | Mean steps |
+| --- | ---: | ---: |
+| Fixed 5 | 0.90625 | 5.000 |
+| Policy lambda=0.00 | 0.90625 | 4.281 |
+| Policy lambda=0.05 | 0.87500 | 0.385 |
+| Oracle | 0.90625 | 0.562 |
+
+Lambda=0 preserved fixed-5 EM with a small step reduction. Higher lambdas traded accuracy for cost. Pattern-only sandbox evidence.
+
+### Artifacts
+
+- `src/rl/*`, `scripts/{generate_search_trajectories,train_stop_policy,evaluate_stop_policy}.py`
+- `tests/rl/*`, trajectory parity tests
+- `artifacts/rl/{trajectories,policies,results}/`
+- `docs/rl_stop_continue_{implementation,results}.md`
+
+### Next safe action
+
+Optionally scale eval to length 96, or discuss the length-24 setting-B table with Nathanaël. Do not claim ARC progress. Do not push unless asked.

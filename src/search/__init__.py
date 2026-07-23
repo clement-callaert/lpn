@@ -1,12 +1,18 @@
 """Public exports for adaptive latent-search helpers."""
 
 from src.search.adaptive_sgd_search import (
+    decode_query,
     encode_leave_one_out_latents,
     make_adaptive_search_fn,
+    make_clip_sgd_optimizer,
+    make_closed_loop_fixed_k_trajectory_fn,
     make_fixed_search_fn,
     make_latent_conditioned_adaptive_search_fn,
+    one_sgd_step,
     run_adaptive_sgd_search,
+    run_closed_loop_fixed_k_with_trajectory,
     run_fixed_sgd_search_like_upstream,
+    score_latent,
 )
 from src.search.compute_accounting import (
     COUNTER_FIELD_NAMES,
@@ -45,13 +51,19 @@ __all__ = [
     "compute_counters_to_dict",
     "counters_for_default_sgd_search",
     "initial_search_state",
+    "decode_query",
     "encode_leave_one_out_latents",
     "make_adaptive_search_fn",
+    "make_clip_sgd_optimizer",
+    "make_closed_loop_fixed_k_trajectory_fn",
     "make_fixed_search_fn",
     "make_latent_conditioned_adaptive_search_fn",
+    "one_sgd_step",
     "rl_observation_from_search_state",
     "run_adaptive_sgd_search",
+    "run_closed_loop_fixed_k_with_trajectory",
     "run_fixed_sgd_search_like_upstream",
+    "score_latent",
     "search_state_to_host_dict",
     "validate_compute_counters_host",
     "validate_stopping_rule_config",

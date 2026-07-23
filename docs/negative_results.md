@@ -48,3 +48,15 @@ Root cause: large compiled train graph for batch 128 on `max_rows/max_cols = 30`
 ## Full arc_train timing on RTX 5090
 
 Stock `arc_train` with `batch_size=128` OOM (~206 GiB requested). `batch_size=16` also OOM (~38.5 GiB). `batch_size=8` completed 1000 steps at about 4.1 it/s steady state (6.48M parameters). Extrapolation: about 34 hours for 500k train steps without scheduled evals. Record: `artifacts/results/arc_timing_probe_20260723.json`. Full ARC local train is therefore out of scope for a short method-implementation phase.
+
+## RL stop/continue: penalty collapse and limited scale
+
+On setting B (train ckpt 0+1, test ckpt 2, length 24):
+
+- `lambda=0.10` collapsed to always-stop (mean steps 0.0, EM 0.875).
+- `lambda=0.05` also fell to EM 0.875 while cutting steps heavily.
+- Only `lambda=0.00` matched fixed-5 EM (0.90625) with a modest step cut (4.28 vs 5.0).
+- Training used length-8 trajectory splits for speed; final eval used length 24, not full length 96.
+- Gradient-norm heuristic matched fixed-5 EM at lower mean steps than the selected RL policy on this slice.
+
+These are sandbox limitations and tradeoffs, not ARC failures. Details: [`docs/rl_stop_continue_results.md`](rl_stop_continue_results.md).

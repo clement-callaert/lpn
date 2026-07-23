@@ -166,5 +166,6 @@ cython_debug/
 outputs/
 wandb/
 artifacts/wandb/
+artifacts/rl/
 *.msgpack
 checkpoints/

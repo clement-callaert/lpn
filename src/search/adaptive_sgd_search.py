@@ -33,6 +33,252 @@ def _global_norm(tree: Any) -> jnp.ndarray:
     return jnp.sqrt(sum(jnp.sum(jnp.square(leaf)) for leaf in leaves))
 
 
+def make_clip_sgd_optimizer(lr: float) -> optax.GradientTransformation:
+    """Build the default clip-then-SGD chain used by upstream GA."""
+    return optax.chain(optax.clip_by_global_norm(1.0), optax.sgd(learning_rate=lr))
+
+
+def score_latent(
+    model: LPN,
+    params: Any,
+    latent_vector: jnp.ndarray,
+    input_seq: jnp.ndarray,
+    output_seq: jnp.ndarray,
+) -> jnp.ndarray:
+    """Score one latent against support pairs with the frozen decoder."""
+    repeated = jnp.broadcast_to(
+        latent_vector[None, :],
+        (output_seq.shape[-2], latent_vector.shape[-1]),
+    )
+
+    def body(module: LPN):
+        row_logits, col_logits, grid_logits = module.decoder(
+            input_seq, output_seq, repeated, dropout_eval=True
+        )
+        return module._compute_log_probs(row_logits, col_logits, grid_logits, output_seq)
+
+    return model.apply({"params": params}, method=body)
+
+
+def decode_query(
+    model: LPN,
+    params: Any,
+    context: jnp.ndarray,
+    query_input: jnp.ndarray,
+    query_input_shape: jnp.ndarray,
+) -> tuple[jnp.ndarray, jnp.ndarray]:
+    """Greedy-decode one query from a latent context."""
+
+    def body(module: LPN):
+        grids, shapes = module._generate_output_from_context(
+            context[None, ...],
+            query_input[None, ...],
+            query_input_shape[None, ...],
+            dropout_eval=True,
+        )
+        return grids[0], shapes[0]
+
+    return model.apply({"params": params}, method=body)
+
+
+def one_sgd_step(
+    model: LPN,
+    params: Any,
+    latent_vector: jnp.ndarray,
+    opt_state: Any,
+    input_seq: jnp.ndarray,
+    output_seq: jnp.ndarray,
+    optimizer: optax.GradientTransformation,
+) -> dict[str, Any]:
+    """Apply one clipped SGD latent update matching the adaptive search body.
+
+    Returns the post-update latent, optimizer state, pre/post scores, gradient
+    diagnostics, and the Optax update vector.
+    """
+
+    def objective(candidate: jnp.ndarray) -> jnp.ndarray:
+        return score_latent(model, params, candidate, input_seq, output_seq)
+
+    score_pre, grads = jax.value_and_grad(objective)(latent_vector)
+    gradient_norm = _global_norm(grads).astype(jnp.float32)
+    updates, new_opt_state = optimizer.update(-grads, opt_state, latent_vector)
+    latent_update_norm = _global_norm(updates).astype(jnp.float32)
+    new_latent = optax.apply_updates(latent_vector, updates)
+    score_post = objective(new_latent).astype(jnp.float32)
+    return {
+        "latent": new_latent,
+        "opt_state": new_opt_state,
+        "score_pre": score_pre.astype(jnp.float32),
+        "score_post": score_post,
+        "grads": grads,
+        "gradient_norm": gradient_norm,
+        "latent_update_norm": latent_update_norm,
+        "updates": updates,
+    }
+
+
+def make_closed_loop_fixed_k_trajectory_fn(
+    model: LPN, *, num_steps: int, lr: float
+) -> Callable[..., dict[str, Any]]:
+    """Return a JIT fn that runs exactly K SGD steps and records a trajectory.
+
+    This path does not short-circuit to generate_output. Final selected latent
+    and decoded grids must match the upstream fixed-K control under matched
+    keys.
+    """
+    if num_steps < 0:
+        raise ValueError(f"num_steps must be non-negative, got {num_steps}")
+    max_rows = model.decoder.config.max_rows
+    max_cols = model.decoder.config.max_cols
+    optimizer = make_clip_sgd_optimizer(lr)
+    latent_dim = model.encoder.config.latent_dim
+
+    @jax.jit
+    def closed_loop_fixed_k(
+        params: Any,
+        pairs: jnp.ndarray,
+        grid_shapes: jnp.ndarray,
+        query_input: jnp.ndarray,
+        query_input_shape: jnp.ndarray,
+        key: jnp.ndarray,
+    ) -> dict[str, Any]:
+        # Match generate_output: split key before variational sampling.
+        unused_key, key_latents = jax.random.split(key)
+
+        def encode_body(module: LPN):
+            latents_mu, latents_logvar = module.encoder(pairs, grid_shapes, dropout_eval=True)
+            if latents_logvar is not None:
+                sampled, *_ = module._sample_latents(latents_mu, latents_logvar, key_latents)
+                return sampled
+            return latents_mu
+
+        latents = model.apply({"params": params}, method=encode_body)
+        # Upstream also passes the leftover key into prepare; unused without perturbation.
+        candidate = LPN._prepare_latents_before_search(True, False, latents, None, unused_key)
+        input_seq, output_seq = LPN._flatten_input_output_for_decoding(pairs, grid_shapes)
+        z0 = candidate[0]
+        opt_state0 = optimizer.init(z0)
+        init_score = score_latent(model, params, z0, input_seq, output_seq).astype(jnp.float32)
+
+        latent_traj = jnp.zeros((num_steps + 1, z0.shape[-1]), dtype=z0.dtype)
+        score_traj = jnp.zeros((num_steps + 1,), dtype=jnp.float32)
+        grad_norm_traj = jnp.zeros((num_steps,), dtype=jnp.float32)
+        update_norm_traj = jnp.zeros((num_steps,), dtype=jnp.float32)
+        grad_traj = jnp.zeros((num_steps, z0.shape[-1]), dtype=z0.dtype)
+        update_traj = jnp.zeros((num_steps, z0.shape[-1]), dtype=z0.dtype)
+        latent_traj = latent_traj.at[0].set(z0)
+        score_traj = score_traj.at[0].set(init_score)
+
+        def scan_body(carry, _unused):
+            step, z, opt_state, score_traj_local = carry
+            step_result = one_sgd_step(
+                model, params, z, opt_state, input_seq, output_seq, optimizer
+            )
+            new_z = step_result["latent"]
+            new_opt = step_result["opt_state"]
+            # Match adaptive scoring: store pre-update score at the current index.
+            score_traj_local = score_traj_local.at[step].set(step_result["score_pre"])
+            new_step = step + 1
+            return (
+                new_step,
+                new_z,
+                new_opt,
+                score_traj_local,
+            ), {
+                "latent": new_z,
+                "score_pre": step_result["score_pre"],
+                "score_post": step_result["score_post"],
+                "gradient_norm": step_result["gradient_norm"],
+                "latent_update_norm": step_result["latent_update_norm"],
+                "grads": step_result["grads"],
+                "updates": step_result["updates"],
+            }
+
+        if num_steps == 0:
+            steps_executed = jnp.asarray(0, dtype=jnp.int32)
+            final_z = z0
+            final_score = init_score
+            best_index = jnp.asarray(0, dtype=jnp.int32)
+            best_context = z0
+            best_score = init_score
+        else:
+            (_final_step, final_z, _opt_state, score_traj), step_outputs = jax.lax.scan(
+                scan_body,
+                (jnp.asarray(0, dtype=jnp.int32), z0, opt_state0, score_traj),
+                xs=None,
+                length=num_steps,
+            )
+            steps_executed = jnp.asarray(num_steps, dtype=jnp.int32)
+            latent_traj = latent_traj.at[1:].set(step_outputs["latent"])
+            score_traj = score_traj.at[num_steps].set(step_outputs["score_post"][-1])
+            grad_norm_traj = step_outputs["gradient_norm"]
+            update_norm_traj = step_outputs["latent_update_norm"]
+            grad_traj = step_outputs["grads"]
+            update_traj = step_outputs["updates"]
+            final_score = step_outputs["score_post"][-1]
+            best_index = jnp.argmax(score_traj)
+            best_context = latent_traj[best_index]
+            best_score = score_traj[best_index]
+
+        output_grids, output_shapes = decode_query(
+            model, params, best_context, query_input, query_input_shape
+        )
+        counters = counters_for_default_sgd_search(
+            candidates=1,
+            steps_executed=num_steps,
+            max_rows=max_rows,
+            max_cols=max_cols,
+            return_two_best=False,
+        )
+        return {
+            "output_grids": output_grids,
+            "output_shapes": output_shapes,
+            "context": best_context,
+            "search_steps_executed": steps_executed,
+            "stop_reason_code": jnp.asarray(REASON_FIXED, dtype=jnp.int32),
+            "counters": counters,
+            "extra_objective_evaluations": jnp.asarray(num_steps, dtype=jnp.int32),
+            "best_support_score": best_score.astype(jnp.float32),
+            "final_support_score": final_score.astype(jnp.float32),
+            "gradient_norm": (
+                grad_norm_traj[-1]
+                if num_steps > 0
+                else jnp.asarray(0.0, dtype=jnp.float32)
+            ),
+            "initial_latent": z0,
+            "initial_support_score": init_score,
+            "latent_trajectory": latent_traj,
+            "score_trajectory": score_traj,
+            "gradient_trajectory": grad_traj,
+            "gradient_norm_trajectory": grad_norm_traj,
+            "update_trajectory": update_traj,
+            "latent_update_norm_trajectory": update_norm_traj,
+            "best_latent_index": best_index.astype(jnp.int32),
+            "final_latent": final_z,
+            "latent_dim": jnp.asarray(latent_dim, dtype=jnp.int32),
+        }
+
+    return closed_loop_fixed_k
+
+
+def run_closed_loop_fixed_k_with_trajectory(
+    model: LPN,
+    params: Any,
+    pairs: jnp.ndarray,
+    grid_shapes: jnp.ndarray,
+    query_input: jnp.ndarray,
+    query_input_shape: jnp.ndarray,
+    key: jnp.ndarray | None,
+    num_steps: int,
+    lr: float = 0.1,
+) -> dict[str, Any]:
+    """Run closed-loop fixed-K search and return per-step trajectory fields."""
+    if key is None:
+        raise ValueError("key is required for variational pattern checkpoints")
+    search_fn = make_closed_loop_fixed_k_trajectory_fn(model, num_steps=num_steps, lr=lr)
+    return search_fn(params, pairs, grid_shapes, query_input, query_input_shape, key)
+
+
 def make_fixed_search_fn(
     model: LPN, *, num_steps: int, lr: float
 ) -> Callable[..., dict[str, Any]]:

@@ -91,25 +91,25 @@ def rl_observation_from_search_state(
         )
 
     max_steps = jnp.maximum(state.max_steps.astype(jnp.float32), 1.0)
-    normalized_step = state.current_step.astype(jnp.float32) / max_steps
+    normalized_current_step = state.current_step.astype(jnp.float32) / max_steps
     score_improvement = state.current_score - state.previous_score
     best_score_improvement = state.best_score - state.previous_score
-    remaining_budget = state.remaining_budget.astype(jnp.float32) / max_steps
+    normalized_remaining_budget = state.remaining_budget.astype(jnp.float32) / max_steps
 
     def normalize(value: jnp.ndarray, mean: float, std: float) -> jnp.ndarray:
         return (value - mean) / std
 
     return {
-        "normalized_step": normalized_step,
+        "normalized_current_step": normalized_current_step,
+        "normalized_remaining_budget": normalized_remaining_budget,
         "current_support_score": normalize(state.current_score, score_mean, score_std),
         "score_improvement": score_improvement,
         "best_score_improvement": best_score_improvement,
         "gradient_norm": normalize(state.gradient_norm, grad_norm_mean, grad_norm_std),
+        "latent_norm": normalize(state.latent_norm, latent_norm_mean, latent_norm_std),
         "latent_update_norm": normalize(
             state.latent_update_norm, latent_update_norm_mean, latent_update_norm_std
         ),
-        "latent_norm": normalize(state.latent_norm, latent_norm_mean, latent_norm_std),
-        "remaining_budget": remaining_budget,
     }
 
 

@@ -35,18 +35,18 @@ class TestSearchState(unittest.TestCase):
         )
         observation = rl_observation_from_search_state(state)
         expected = {
-            "normalized_step",
+            "normalized_current_step",
+            "normalized_remaining_budget",
             "current_support_score",
             "score_improvement",
             "best_score_improvement",
             "gradient_norm",
-            "latent_update_norm",
             "latent_norm",
-            "remaining_budget",
+            "latent_update_norm",
         }
         self.assertEqual(set(observation), expected)
-        self.assertEqual(float(observation["normalized_step"]), 0.0)
-        self.assertEqual(float(observation["remaining_budget"]), 1.0)
+        self.assertEqual(float(observation["normalized_current_step"]), 0.0)
+        self.assertEqual(float(observation["normalized_remaining_budget"]), 1.0)
 
     def test_host_dict(self):
         state = initial_search_state(

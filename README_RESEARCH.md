@@ -12,14 +12,14 @@ This document is the branch-specific entry point. See the upstream `README.md` f
 ## Current state (2026-07-23)
 
 - Branch: `research/stochastic-latent-search`
-- Tip commit: `063d4522be004adeeb619e630bf8b82b181fa467`
+- Tip: inspect with `git rev-parse HEAD` (adaptive search landed; RL stop/continue prototype added)
 - Upstream scientific control: `0adfe56b86d2cba5ae5794edb02da6399a96d98a`
-- Model/search source changes: none (no RL policy code yet)
 - **Development platform:** frozen `pattern_2d` / Hugging Face `lpn-2d` checkpoints
 - **pattern_2d three-seed baseline:** complete (saturated after 5 search steps)
-- **ARC audit + RL formulation docs:** complete
+- **Compute counters + non-RL adaptive search:** complete
+- **RL stop/continue prototype:** complete (linear Bernoulli + REINFORCE)
 - **Official ARC weights:** not available on this account (see below)
-- **Next work:** implement compute counters, non-RL baselines, then a minimal RL stop/continue policy on pattern/`lpn-2d`
+- **Results:** [`docs/rl_stop_continue_results.md`](docs/rl_stop_continue_results.md)
 
 The exact pinned CPU environment is `.venv`. GPU work uses `.venv-gpu` (JAX/JAXlib 0.6.0, Flax 0.10.2): an explicit Blackwell compatibility deviation, not an exact pin reproduction. Freeze: `artifacts/environment/pip_freeze_gpu_compat.txt`.
 
@@ -69,11 +69,13 @@ Full ARC remains optional. Blockers and timing notes are in [`docs/negative_resu
 
 ## Implementation order (method-first)
 
-1. Compute counters behind tests.
-2. Non-RL baselines on frozen pattern / `lpn-2d` (fixed steps, patience, grad-norm stop, existing SGD/Adam/multi-start).
-3. Minimal RL stop/continue policy (see formulation doc).
-4. Matched tables on the same checkpoint, tasks, and seeds.
+1. Compute counters behind tests. **Done.**
+2. Non-RL baselines on frozen pattern / `lpn-2d`. **Done.**
+3. Minimal RL stop/continue policy. **Done** (prototype).
+4. Matched tables on the same checkpoint, tasks, and seeds. **Done** on length-24 setting B.
 5. ARC only if a provenance-clear checkpoint becomes available.
+
+See [`docs/rl_stop_continue_implementation.md`](docs/rl_stop_continue_implementation.md) and [`docs/rl_stop_continue_results.md`](docs/rl_stop_continue_results.md).
 
 ## Resume procedure
 
