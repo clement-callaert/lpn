@@ -1,0 +1,47 @@
+{
+  "experiment_id": "arc_timing_probe_20260723",
+  "git_commit": "063d4522be004adeeb619e630bf8b82b181fa467",
+  "accelerator": "NVIDIA GeForce RTX 5090 32GB",
+  "model_parameters": 6475520,
+  "config": "arc_train with Hydra overrides",
+  "stock_batch_128": {
+    "status": "failure",
+    "error": "OOM requesting ~206 GiB",
+    "log": "artifacts/logs/arc_timing_probe_20260723_124820.log"
+  },
+  "batch_16": {
+    "status": "failure",
+    "error": "OOM requesting ~38.5 GiB",
+    "log": "artifacts/logs/arc_timing_probe_bs16_20260723_125800.log"
+  },
+  "batch_8": {
+    "status": "success",
+    "batch_size": 8,
+    "gradient_accumulation_steps": 1,
+    "steps_run": 1000,
+    "eval": "disabled",
+    "tqdm_it_s_by_step": {
+      "100": 1.76,
+      "200": 2.72,
+      "300": 3.03,
+      "400": 3.43,
+      "500": 3.71,
+      "600": 3.89,
+      "700": 4.01,
+      "800": 4.1,
+      "900": 4.15,
+      "1000": 4.19
+    },
+    "steady_state_it_s": 4.1125,
+    "train_bar_seconds_1000_steps": 271,
+    "process_wall_seconds_approx": 307,
+    "log": "artifacts/logs/arc_timing_probe_bs8_20260723_125210.log"
+  },
+  "extrapolation_500k_train_only": {
+    "assumed_it_s": 4.1125,
+    "hours": 33.77237419790611,
+    "days": 1.407182258246088,
+    "note": "No scheduled evals included. Stock arc_train evaluates every 10k steps (50 cycles) with mean+GA JSON; that adds unknown extra time."
+  },
+  "scientific_use": "Hardware timing probe only. Not an ARC accuracy baseline. Stock batch_size=128 does not fit this 32GB GPU."
+}

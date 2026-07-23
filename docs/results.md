@@ -1,5 +1,13 @@
 # Results
 
+## How to read this file (2026-07-23)
+
+The numbers below are the completed **pattern_2d** three-seed original-search baseline. They are a controlled reproduction and implementation sandbox.
+
+They are **not** ARC-AGI results. pattern_2d saturates after five search steps, so it cannot show large gains from stronger search or RL. Use these tables as the matched control when implementing new test-time methods. Do not present them as ARC progress.
+
+Official ARC checkpoints are not available locally (W&B project not visible; no public HF ARC model). See [`README_RESEARCH.md`](../README_RESEARCH.md) and [`docs/negative_results.md`](negative_results.md).
+
 ## Baseline reproduction
 
 The exact source/configuration baseline completed in the documented GPU compatibility environment at commit `0adfe56b86d2cba5ae5794edb02da6399a96d98a`. Three independent 200,000-step training seeds are available. This environment uses JAX/JAXlib 0.6.0 and Flax 0.10.2 and is an explicit hardware-compatibility deviation from the repository pins, not an exact dependency reproduction.

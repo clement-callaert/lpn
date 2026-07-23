@@ -1,31 +1,56 @@
 # Stochastic latent-search research branch
 
-This branch investigates whether stochastic, proximal, or population-based test-time latent search improves out-of-distribution program induction over the original deterministic search. The official repository is the control group: dataset generation, encoder/decoder architecture, latent dimensionality, training objective, representation, decoding, and official metrics remain unchanged during the first contribution.
+This branch implements new **test-time** methods on Latent Program Networks: reinforcement-learning control of latent search, alternate stopping rules, and related compute-allocation baselines. The official repository remains the control group for data, architecture, training objective, greedy decoding, and official metrics.
+
+**Project goal (current):** implement and validate new methods on a frozen checkpoint.  
+**Not required for this phase:** large ARC-AGI accuracy gains or SOTA claims.
+
+Reference paper: Searching Latent Program Spaces (https://arxiv.org/abs/2411.08706). Official code: https://github.com/clement-bonnet/lpn.
 
 This document is the branch-specific entry point. See the upstream `README.md` for the original project and [postmortem.md](postmortem.md) for the chronological session record.
 
-## Current state
+## Current state (2026-07-23)
 
 - Branch: `research/stochastic-latent-search`
-- Control commit: `0adfe56b86d2cba5ae5794edb02da6399a96d98a`
-- Upstream: `https://github.com/clement-bonnet/lpn.git`
-- Model/search source changes: none
-- Completed full training seeds: 0, 1, and 2
-- Completed search-step ablations: seeds 0, 1, and 2 (dataset seed 0, evaluation seed 0)
-- Three-seed original-search baseline: complete on in-family `pattern_2d`
-- Next required work: review and commit the baseline documentation/evaluator/results, then only after that begin new search-method implementations
+- Tip commit: `063d4522be004adeeb619e630bf8b82b181fa467`
+- Upstream scientific control: `0adfe56b86d2cba5ae5794edb02da6399a96d98a`
+- Model/search source changes: none (no RL policy code yet)
+- **Development platform:** frozen `pattern_2d` / Hugging Face `lpn-2d` checkpoints
+- **pattern_2d three-seed baseline:** complete (saturated after 5 search steps)
+- **ARC audit + RL formulation docs:** complete
+- **Official ARC weights:** not available on this account (see below)
+- **Next work:** implement compute counters, non-RL baselines, then a minimal RL stop/continue policy on pattern/`lpn-2d`
 
-The exact pinned CPU environment is `.venv`. The RTX 5090 cannot compile the repository-pinned JAX 0.4.26 CUDA build, so GPU work uses the explicitly documented `.venv-gpu` compatibility environment: JAX/JAXlib 0.6.0, Flax 0.10.2, Optax 0.2.2, and Torch 2.4.1+cpu. Its complete freeze is `artifacts/environment/pip_freeze_gpu_compat.txt`.
+The exact pinned CPU environment is `.venv`. GPU work uses `.venv-gpu` (JAX/JAXlib 0.6.0, Flax 0.10.2): an explicit Blackwell compatibility deviation, not an exact pin reproduction. Freeze: `artifacts/environment/pip_freeze_gpu_compat.txt`.
 
-## Reproduction status
+## Checkpoint situation
 
-The unchanged official command is:
+| Source | Available? | Role |
+| --- | --- | --- |
+| Local `pattern_2d` seeds 0/1/2 | yes | Primary sandbox; three-seed control already recorded |
+| Hugging Face [`clement-bonnet/lpn-2d`](https://huggingface.co/clement-bonnet/lpn-2d) (`quiet-thunder-789--checkpoint:v0`) | yes (downloaded) | Public pattern-2d weights; same domain family |
+| Hugging Face ARC LPN model | **no** | Authors published only `lpn-2d` under this account |
+| W&B `TheThinker/ARC/...--checkpoint` | **blocked** | API key works; project not visible (`project 'ARC' not found under entity 'TheThinker'`) |
+| Full local `arc_train` (500k steps, batch 128) | impractical here | Stock batch OOM on 32GB; batch 8 fits at ~4.1 it/s (~34h train-only for 500k) |
 
-```bash
-PYTHONPATH="$PWD" python src/train.py --config-name pattern_2d
-```
+GitHub code and the paper PDF do **not** include trained ARC weights. Retraining the encoder/decoder is **not** required to implement test-time RL or new search controllers.
 
-An exact-pin CPU attempt initialized correctly but could not finish its first 1,000-step block after about 18 minutes. In the GPU compatibility environment, the unchanged 200,000-step runs completed as follows:
+## Why pattern / `lpn-2d` is enough for this phase
+
+Meaningful for:
+
+- implementing RL and non-RL test-time controllers on a real frozen LPN
+- compute counters, eval harness, matched comparisons
+- demonstrating that new methods run correctly
+
+Not meaningful as a final ARC claim:
+
+- in-family PATTERN tasks; saturated near-perfect exact match by 5 search steps
+- cannot support "improves ARC-AGI" statements
+
+Report pattern results as **implementation / sandbox evidence**. Optional ARC work later if W&B access appears.
+
+## pattern_2d baseline summary
 
 | Training seed | Checkpoint SHA-256 | Final mean exact match | Final 10-step SGD exact match |
 | ---: | --- | ---: | ---: |
@@ -33,67 +58,55 @@ An exact-pin CPU attempt initialized correctly but could not finish its first 1,
 | 1 | `bc292f2cd95365f597dec2a3f61c099a7d5a08177dc56050e8823c3a616f72be` | 0.98177 | 0.99740 |
 | 2 | `92ecdd494f036d4ac0a865903316575b207444493ee76d6b7c0b0b601e2ee8fc` | 0.93229 | 1.00000 |
 
-Frozen-checkpoint step ablations with common dataset seed 0 and evaluation key 0:
+Frozen ablation mean exact match across seeds: 0.88194 (0 steps), 0.96007 (1 step), 1.0 (5+ steps). Do not retrain unless a scientific defect is found. Details: [`docs/results.md`](docs/results.md).
 
-| Search steps | Seed 0 | Seed 1 | Seed 2 | Mean | Std |
-| ---: | ---: | ---: | ---: | ---: | ---: |
-| 0 | 0.72396 | 0.98698 | 0.93490 | 0.88194 | 0.13928 |
-| 1 | 0.88542 | 1.00000 | 0.99479 | 0.96007 | 0.06470 |
-| 5 | 1.00000 | 1.00000 | 1.00000 | 1.00000 | 0.00000 |
-| 10 | 1.00000 | 1.00000 | 1.00000 | 1.00000 | 0.00000 |
-| 20 | 1.00000 | 1.00000 | 1.00000 | 1.00000 | 0.00000 |
+## ARC status (optional later)
 
-Mean and zero-step gradient ascent match exactly under the same evaluation key for every seed. Saturation under this protocol is at 5 steps (all three seeds perfect). First-call timings include separate JIT compilation and are not compute-matched inference measurements. See [docs/results.md](docs/results.md) for the full aggregate table and interpretation limits.
+Audit: [`docs/arc_baseline_audit.md`](docs/arc_baseline_audit.md).  
+RL formulation (domain-agnostic MDP; demos on pattern first): [`docs/rl_test_time_compute_formulation.md`](docs/rl_test_time_compute_formulation.md).
+
+Full ARC remains optional. Blockers and timing notes are in [`docs/negative_results.md`](docs/negative_results.md).
+
+## Implementation order (method-first)
+
+1. Compute counters behind tests.
+2. Non-RL baselines on frozen pattern / `lpn-2d` (fixed steps, patience, grad-norm stop, existing SGD/Adam/multi-start).
+3. Minimal RL stop/continue policy (see formulation doc).
+4. Matched tables on the same checkpoint, tasks, and seeds.
+5. ARC only if a provenance-clear checkpoint becomes available.
 
 ## Resume procedure
-
-Start from the repository root and confirm state before running anything:
 
 ```bash
 git -c safe.directory="$PWD" rev-parse HEAD
 git -c safe.directory="$PWD" status --short
 .venv-gpu/bin/python -m pip check
+.venv-gpu/bin/python -c "import jax; print(jax.devices())"
 sha256sum artifacts/checkpoints/pattern_2d_seed_{0,1,2}.msgpack
 ```
 
-If git reports dubious ownership when launching W&B, prefer a one-shot environment override rather than writing git config:
+HF `lpn-2d` cache path (after Option B download):
 
-```bash
-export GIT_CONFIG_COUNT=1
-export GIT_CONFIG_KEY_0=safe.directory
-export GIT_CONFIG_VALUE_0="$PWD"
+```text
+~/.cache/huggingface/hub/models--clement-bonnet--lpn-2d/snapshots/.../quiet-thunder-789--checkpoint:v0/
 ```
-
-The three-seed baseline is complete. Do not retrain seeds 0–2 unless a scientific defect is found. New search methods begin only after the baseline documentation and evaluator are reviewed and committed.
 
 ## Evidence map
 
+- ARC audit: `docs/arc_baseline_audit.md`
+- RL formulation: `docs/rl_test_time_compute_formulation.md`
+- Search map: `docs/codebase_map.md`
+- pattern results: `docs/results.md`
+- Failures / blockers: `docs/negative_results.md`
+- Session log: `postmortem.md`
 - Environment: `artifacts/environment/`
-- Full logs: `artifacts/logs/`
-- Machine-readable records: `artifacts/results/`
-- Local ignored checkpoints: `artifacts/checkpoints/`
-- Search execution map: `docs/codebase_map.md`
-- Reproduction details: `docs/baseline_reproduction.md`
-- Experimental controls: `docs/experimental_protocol.md`
-- Results: `docs/results.md`
-- Failures and negative results: `docs/negative_results.md`
-- Chronological handoff: `postmortem.md`
+- Logs / results: `artifacts/logs/`, `artifacts/results/`
 
 ## Scientific guardrails
 
-- Do not compare methods across different checkpoints, task arrays, keys, decoding, stopping rules, or unreported compute budgets.
+- Do not compare methods across different checkpoints, task arrays, keys, decoding, or unreported compute budgets.
 - Do not count evaluation-key repeats as independent training seeds.
-- Do not tune on a final test set.
-- `pattern_2d` is in-family and does not answer the OOD hypothesis.
-- Decoder/objective/gradient-call counters remain unimplemented, so current wall times are diagnostic only.
-- Do not modularize or add Adam, proximal, Langevin, or population methods until the three-seed original-search baseline is reviewed and committed.
-
-## Planned first commits
-
-Keep the eventual history reviewable:
-
-1. `docs: record baseline environment and latent-search path`
-2. `exp: add local checkpoint baseline evaluator`
-3. `exp: record three-seed latent-search step ablation`
-
-Do not commit `.venv*`, `state.msgpack`, `artifacts/checkpoints/`, W&B caches, secrets, or generated Hydra output directories.
+- Do not claim ARC-AGI improvement from pattern / `lpn-2d` results.
+- Do not claim compute efficiency before explicit counters exist.
+- Do not tune on ARC evaluation solutions if ARC is used later.
+- Keep encoder/decoder, training objective, greedy decode, and official metrics fixed while adding test-time controllers.

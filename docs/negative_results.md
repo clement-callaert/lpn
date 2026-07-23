@@ -24,3 +24,27 @@ When the agent process ran as root against a repository owned by `calla`, plain 
 2. `wandb.init` during the first seed-2 training attempt (`MailboxError: transport failed`).
 
 Both were operational failures, not scientific result failures. Remediation used one-shot `safe.directory` overrides (`git -c ...` in the evaluator; `GIT_CONFIG_*` environment variables for training) without writing git config. The ablation and training were then re-run successfully.
+
+## Official ARC checkpoint evaluation without W&B credentials
+
+[`src/evaluate_checkpoint.py`](../src/evaluate_checkpoint.py) loads model weights through W&B artifacts and sets `WANDB_MODE=run`. Early in the project the API key was unset. Later a key was configured, but download still failed with:
+
+```text
+project 'ARC' not found under entity 'TheThinker'
+```
+
+So authentication works, but the `TheThinker/ARC` project is not visible to this account. No official ARC `state.msgpack` was obtained. This is an access blocker, not a model-quality result.
+
+## No public Hugging Face ARC LPN weights
+
+Under author `clement-bonnet`, Hugging Face lists `clement-bonnet/lpn-2d` only (PATTERN 2D checkpoint `quiet-thunder-789--checkpoint:v0`). There is no public ARC-AGI LPN model repo from this account. Option B download of `lpn-2d` succeeded and is suitable as a pattern sandbox, not as an ARC baseline.
+
+## ARC overfit smoke OOM at stock batch size
+
+The smallest planned ARC smoke used `--config-path configs/arc_train_overfit --config-name 007bbfb7` with one training step. With the stock overfit `training.batch_size: 128`, XLA requested about 18.64 GiB during train-step compile and failed with `RESOURCE_EXHAUSTED` (`artifacts/logs/arc_smoke_20260723_122947.log`).
+
+Root cause: large compiled train graph for batch 128 on `max_rows/max_cols = 30` grids, not a missing dataset. A second smoke with Hydra overrides `training.batch_size=8`, `training.gradient_accumulation_steps=1`, and fewer workers completed successfully (`artifacts/logs/arc_smoke_20260723_123100.log`). Metrics were zero after one step, as expected for an execution smoke. This is not an ARC-AGI accuracy baseline and uses the smaller overfit architecture, not full `arc_train.yaml`.
+
+## Full arc_train timing on RTX 5090
+
+Stock `arc_train` with `batch_size=128` OOM (~206 GiB requested). `batch_size=16` also OOM (~38.5 GiB). `batch_size=8` completed 1000 steps at about 4.1 it/s steady state (6.48M parameters). Extrapolation: about 34 hours for 500k train steps without scheduled evals. Record: `artifacts/results/arc_timing_probe_20260723.json`. Full ARC local train is therefore out of scope for a short method-implementation phase.

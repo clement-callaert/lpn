@@ -281,3 +281,108 @@ Saturation under this protocol: 5 steps. Improvement over zero-step mean: about 
 ### Next safe action
 
 Review `git status` / diffs, then create the planned documentation and experiment commits without staging checkpoints, venvs, W&B caches, or Hydra outputs. Only after that review, begin implementing the first new search method against the frozen three-seed control.
+
+## Session 4 — 2026-07-23 — ARC-AGI audit and RL formulation
+
+### Objective
+
+Prepare a rigorous ARC-AGI baseline audit and a formal RL formulation for test-time compute allocation. Do not implement an RL policy or new search methods.
+
+### Repository state
+
+- Tip commit: `063d4522be004adeeb619e630bf8b82b181fa467` (pattern_2d research commits already on branch)
+- Upstream control: `0adfe56b86d2cba5ae5794edb02da6399a96d98a`
+- Branch: `research/stochastic-latent-search`
+- Working tree at start: only `.gitignore` modified among tracked files
+- Environment: `.venv-gpu` on RTX 5090; `WANDB_API_KEY` and `HF_TOKEN` unset
+- No competing train/eval process
+
+### Actions
+
+1. Confirmed git tip/diff and that upstream scientific sources were not unexpectedly modified.
+2. Audited ARC train/eval paths, JSON splits, re-ARC ID overlap, checkpoint loading, and leakage risks.
+3. Attempted the smallest ARC overfit smoke; recorded OOM then a reduced-batch success.
+4. Wrote the RL MDP formulation, non-RL baselines, and compute-counter design.
+5. Updated research entrypoint docs.
+
+### Failures and root causes
+
+1. Preferred scientific ARC eval via `evaluate_checkpoint.py` blocked: no W&B API key; script forces `WANDB_MODE=run`.
+2. First smoke (`arc_smoke_20260723_122947`) OOM: stock overfit `batch_size=128` compile requested about 18.64 GiB.
+3. Second smoke succeeded only after documented Hydra batch/worker reductions. Still not a scientific ARC baseline (tiny overfit model, 1 step, zero metrics).
+
+### Observations
+
+- `ARC_TASK_NAMES` equals the 400 training JSON IDs and has zero overlap with evaluation IDs.
+- Bundled `arc-agi_test_challenges.json` is a 100-task subset of training IDs.
+- Full `arc_train.yaml` uses latent dim 128, 4/4 layers, 500k steps, and logs evaluation JSON metrics during training.
+- Overfit smoke model: 207,264 parameters, latent dim 32, encoder layers 0.
+- Successful smoke provenance: `artifacts/results/arc_smoke_20260723_123100.json`.
+
+### Scientific decisions
+
+- Primary RL formulation: finite-horizon MDP with stop-and-decode; fixed budgets are restricted policies.
+- Online rewards restricted to train-side labels; ARC evaluation solutions are final-report only.
+- Non-RL adaptive baselines are mandatory before RL.
+- No compute-efficiency claims until explicit counters exist.
+- Do not launch full `arc_train` until cost/storage and a non-leaky logging policy are planned.
+
+### Artifacts produced or updated
+
+- `docs/arc_baseline_audit.md` (new)
+- `docs/rl_test_time_compute_formulation.md` (new)
+- `docs/negative_results.md`
+- `README_RESEARCH.md`
+- this postmortem section
+- `artifacts/logs/arc_smoke_20260723_122947.log` (failed)
+- `artifacts/logs/arc_smoke_20260723_123100.log` (success)
+- `artifacts/results/arc_smoke_20260723_123100.json`
+- `artifacts/environment/arc_smoke_20260723_123100_resolved.yaml`
+- `artifacts/checkpoints/arc_smoke_20260723_123100_state.msgpack` (ignored)
+
+### Unresolved blockers
+
+1. No provenance-clear ARC checkpoint locally.
+2. W&B credential/process requirements for official `evaluate_checkpoint.py`.
+3. Compute counters unimplemented.
+4. Full ARC training cost unmeasured.
+5. Stock evaluation-metric logging during training remains a selection-leakage risk if used for picking.
+
+### Next safe action
+
+Obtain a provenance-clear ARC checkpoint (W&B access or a measured training plan), implement compute counters behind tests, define a train-side validation carve-out, and run non-RL search-budget baselines before any RL policy code.
+
+## Session 5 — 2026-07-23 — Goal clarification and documentation update
+
+### Objective
+
+Record the clarified research goal and the checkpoint access situation in the branch markdown files.
+
+### Clarified goal
+
+Implement new test-time methods (RL / non-RL search control) on a frozen LPN. Significant ARC-AGI accuracy progress is not required in this phase.
+
+### Checkpoint findings
+
+1. W&B download attempt with API key failed: `project 'ARC' not found under entity 'TheThinker'`. No official ARC artifact on disk.
+2. Hugging Face has no ARC LPN model under `clement-bonnet`; only `clement-bonnet/lpn-2d` (PATTERN). Option B download of that checkpoint succeeded.
+3. GitHub and the paper PDF do not ship ARC weights.
+4. Full `arc_train` timing: stock batch 128 OOM; batch 8 about 4.1 it/s (~34h for 500k train-only).
+
+### Scientific decision
+
+Use frozen pattern_2d / HF `lpn-2d` as the method-implementation sandbox. Treat pattern metrics as implementation evidence only. Keep ARC audit docs for optional later work. Do not retrain the base model merely to add test-time controllers.
+
+### Docs updated
+
+- `README_RESEARCH.md`
+- `docs/arc_baseline_audit.md`
+- `docs/rl_test_time_compute_formulation.md`
+- `docs/negative_results.md`
+- `docs/research_hypotheses.md`
+- `docs/results.md`
+- this postmortem section
+
+### Next safe action
+
+Implement compute counters, then non-RL baselines, then a minimal RL stop/continue policy on frozen pattern / `lpn-2d` checkpoints.

@@ -1,0 +1,660 @@
+{
+  "accelerator": "[CudaDevice(id=0)]",
+  "candidate_count": 1,
+  "checkpoint": {
+    "path": "artifacts/checkpoints/pattern_2d_seed_0.msgpack",
+    "sha256": "3cb6d3e41e698e1e0e62c785ecdf90d1fb4a600384fd6cf21f3460a110d7de13",
+    "size_bytes": 4082621
+  },
+  "compute_counters": {
+    "autoregressive_token_predictions": 3456,
+    "candidate_step_exposure": 1152,
+    "decoder_support_evaluations": 1152,
+    "gradient_evaluations": 960,
+    "latent_candidates_evaluated": 192,
+    "objective_evaluations": 1152,
+    "output_decoding_calls": 192,
+    "search_steps_executed": 960
+  },
+  "configuration": "outputs/2026-07-22/22-55-12/.hydra/config.yaml",
+  "dataset": {
+    "family": "PATTERN",
+    "length": 48,
+    "num_pairs": 4,
+    "seed": 100,
+    "split_name": "development",
+    "task_kwargs": {
+      "num_cols": 4,
+      "num_rows": 4,
+      "pattern_size": 2
+    }
+  },
+  "environment": {
+    "flax": "0.10.2",
+    "jax": "0.6.0",
+    "jaxlib": "0.6.0",
+    "optax": "0.2.2",
+    "python": "3.10.12"
+  },
+  "error_message": null,
+  "evaluation_seed": 0,
+  "experiment_id": "adaptive_dev_fixed5_20260723",
+  "extra_objective_evaluations_total": 0,
+  "git_branch": "research/stochastic-latent-search",
+  "git_commit": "063d4522be004adeeb619e630bf8b82b181fa467",
+  "hostname": "work-station",
+  "metrics": {
+    "accuracy": 0.9947916865348816,
+    "correct_shapes": 1.0,
+    "pixel_correctness": 0.9996744990348816
+  },
+  "number_of_leave_one_out_examples": 192,
+  "number_of_tasks": 48,
+  "per_task_search_steps": [
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5
+    ]
+  ],
+  "per_task_stop_reasons": [
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ],
+    [
+      "fixed",
+      "fixed",
+      "fixed",
+      "fixed"
+    ]
+  ],
+  "prng_key_protocol": "trainer_matched_single_batch_key",
+  "scientific_use": "Adaptive stopping sandbox on frozen pattern_2d. Not an ARC-AGI result and not an out-of-distribution claim.",
+  "search_step_stats": {
+    "max": 5,
+    "mean": 5.0,
+    "median": 5.0,
+    "min": 5,
+    "std": 0.0,
+    "total": 960
+  },
+  "status": "success",
+  "stopping_rule": {
+    "gradient_norm_threshold": null,
+    "learning_rate": 0.1,
+    "max_search_steps": 5,
+    "min_improvement": null,
+    "name": "fixed",
+    "optimizer": "sgd",
+    "patience": null,
+    "search_method": "original_gradient_ascent_sgd"
+  },
+  "timestamp": "2026-07-23T14:27:04.221148+02:00",
+  "wall_clock_seconds": 35.82208804900074,
+  "warm_up": {
+    "performed": true,
+    "wall_clock_seconds": 13.00243646600029
+  }
+}

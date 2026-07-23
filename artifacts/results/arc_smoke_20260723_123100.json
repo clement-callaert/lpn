@@ -1,0 +1,69 @@
+{
+  "experiment_id": "arc_smoke_20260723_123100",
+  "git_commit": "063d4522be004adeeb619e630bf8b82b181fa467",
+  "git_branch": "research/stochastic-latent-search",
+  "upstream_control_commit": "0adfe56b86d2cba5ae5794edb02da6399a96d98a",
+  "timestamp": "2026-07-23T12:31:17+02:00",
+  "hostname": "work-station",
+  "accelerator": "NVIDIA GeForce RTX 5090, JAX CudaDevice(id=0)",
+  "environment": {
+    "venv": ".venv-gpu",
+    "jax": "0.6.0",
+    "flax": "0.10.2",
+    "optax": "0.2.2",
+    "note": "GPU compatibility environment; not exact repository pins"
+  },
+  "command": "PYTHONPATH=$PWD WANDB_MODE=offline .venv-gpu/bin/python src/train.py --config-path configs/arc_train_overfit --config-name 007bbfb7 training.total_num_steps=1 training.log_every_n_steps=1 training.eval_every_n_logs=1 training.save_checkpoint_every_n_logs=null training.batch_size=8 training.gradient_accumulation_steps=1 training.task_generator.num_workers=4 eval.test_datasets.0.num_tasks_to_show=0 eval.test_datasets.0.length=8 eval.test_datasets.0.batch_size=8 eval.json_datasets.0.num_tasks_to_show=0",
+  "resolved_config": "outputs/2026-07-23/12-31-16/.hydra/config.yaml",
+  "resolved_config_copy": "artifacts/environment/arc_smoke_20260723_123100_resolved.yaml",
+  "log": "artifacts/logs/arc_smoke_20260723_123100.log",
+  "training_seed": 0,
+  "dataset": "re-ARC overfit_task=007bbfb7 plus training JSON overfit for task 007bbfb7",
+  "dataset_seed": "generator workers use training.seed; JSON eval uses trainer PRNG splits",
+  "evaluation_seed": "derived from training key splits; not an independent scientific seed",
+  "checkpoint": {
+    "path": "artifacts/checkpoints/arc_smoke_20260723_123100_state.msgpack",
+    "sha256": "aec451c60110ae04de31acf1e6539def883cc1a165365283c022df203cc37b62",
+    "tracked": false,
+    "also_present_as": "state.msgpack in repo root after train exit"
+  },
+  "model": {
+    "config_name": "007bbfb7 overfit",
+    "total_parameters": 207264,
+    "latent_dim": 32,
+    "encoder_layers": 0,
+    "decoder_layers": 3,
+    "note": "Not the full arc_train architecture (latent_dim 128, 4/4 layers)"
+  },
+  "search_method": "mean only",
+  "search_steps": 0,
+  "candidate_count": 1,
+  "number_of_tasks_json": 1,
+  "metrics": {
+    "generator_arc_overfit_mean_accuracy": 0.0,
+    "json_mean_top_1_accuracy": 0.0,
+    "json_mean_top_2_accuracy": 0.0
+  },
+  "wall_clock_seconds_approx": 80,
+  "status": "success",
+  "error_message": null,
+  "prior_failed_attempt": {
+    "log": "artifacts/logs/arc_smoke_20260723_122947.log",
+    "status": "failure",
+    "error_message": "RESOURCE_EXHAUSTED: Out of memory while trying to allocate 20017305600 bytes with stock overfit batch_size=128",
+    "root_cause": "JIT/train compile for batch 128 on max 30x30 ARC grids requested about 18.64 GiB"
+  },
+  "config_deviations_from_stock_overfit_yaml": [
+    "training.total_num_steps=1",
+    "training.log_every_n_steps=1",
+    "training.eval_every_n_logs=1",
+    "training.save_checkpoint_every_n_logs=null",
+    "training.batch_size=8",
+    "training.gradient_accumulation_steps=1",
+    "training.task_generator.num_workers=4",
+    "eval.test_datasets.0.length=8",
+    "eval.test_datasets.0.batch_size=8",
+    "num_tasks_to_show=0"
+  ],
+  "scientific_use": "Execution smoke only. Verifies ARC re-ARC loading, overfit model init, mean decode, and training-JSON top-1/top-2 metric path. Not an ARC-AGI accuracy baseline."
+}
