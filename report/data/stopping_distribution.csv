@@ -1,0 +1,19 @@
+controller,steps,count,source_result
+Fixed 5,0,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+Fixed 5,1,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+Fixed 5,2,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+Fixed 5,3,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+Fixed 5,4,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+Fixed 5,5,96,settingB_ckpt2_ds0_len24_eval_20260723.json
+Gradient norm 0.1,0,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+Gradient norm 0.1,1,25,settingB_ckpt2_ds0_len24_eval_20260723.json
+Gradient norm 0.1,2,11,settingB_ckpt2_ds0_len24_eval_20260723.json
+Gradient norm 0.1,3,8,settingB_ckpt2_ds0_len24_eval_20260723.json
+Gradient norm 0.1,4,1,settingB_ckpt2_ds0_len24_eval_20260723.json
+Gradient norm 0.1,5,51,settingB_ckpt2_ds0_len24_eval_20260723.json
+RL lambda=0,0,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+RL lambda=0,1,8,settingB_ckpt2_ds0_len24_eval_20260723.json
+RL lambda=0,2,11,settingB_ckpt2_ds0_len24_eval_20260723.json
+RL lambda=0,3,2,settingB_ckpt2_ds0_len24_eval_20260723.json
+RL lambda=0,4,0,settingB_ckpt2_ds0_len24_eval_20260723.json
+RL lambda=0,5,75,settingB_ckpt2_ds0_len24_eval_20260723.json
